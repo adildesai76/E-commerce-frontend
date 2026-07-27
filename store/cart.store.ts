@@ -41,6 +41,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     couponDiscount: 0,
     total: 0,
     itemCount: 0,
+    deliveryCharge: 0,
     savings: 0,
   },
 
