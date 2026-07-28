@@ -70,7 +70,7 @@ export const useLogin = () => {
     onSuccess: async (data) => {
       try {
         // console.log("data", data.token);
-        document.cookie = `auth_token=${data.token}`;
+        document.cookie = `auth_token=${data.token}; Path=/`;
         toast.success(data.message || "Logged in successfully");
       } catch (error) {
         console.error("Failed to store frontend cookie:", error);
