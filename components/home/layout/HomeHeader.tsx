@@ -45,6 +45,12 @@ export function Header({ logo, storeName }: HeaderProps) {
 
   const handleLogout = async () => {
     try {
+      document.cookie = "auth_token=; Max-Age=0";
+      document.cookie = "auth_token=; Path=/; Max-Age=0";
+      document.cookie.split(";").forEach((cookie) => {
+        const name = cookie.split("=")[0].trim();
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      });
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
@@ -130,9 +136,8 @@ export function Header({ logo, storeName }: HeaderProps) {
               </span>
               {/* Active Indicator */}
               <span
-                className={`absolute bottom-0 left-4 right-4 h-0.5 bg-blue-600 transition-all duration-300 origin-left ${
-                  isActive(link.href) ? "scale-x-100" : "scale-x-0"
-                }`}
+                className={`absolute bottom-0 left-4 right-4 h-0.5 bg-blue-600 transition-all duration-300 origin-left ${isActive(link.href) ? "scale-x-100" : "scale-x-0"
+                  }`}
               />
             </Link>
           ))}
@@ -183,19 +188,17 @@ export function Header({ logo, storeName }: HeaderProps) {
                 {user?.name?.[0]?.toUpperCase()}
               </div>
               <ChevronDown
-                className={`hidden h-4 w-4 text-slate-400 transition-transform sm:block ${
-                  userMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`hidden h-4 w-4 text-slate-400 transition-transform sm:block ${userMenuOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
             {/* Dropdown Menu */}
             <div
-              className={`absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white py-2 shadow-lg transition-all duration-200 origin-top-right dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 ${
-                userMenuOpen
+              className={`absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white py-2 shadow-lg transition-all duration-200 origin-top-right dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 ${userMenuOpen
                   ? "scale-100 opacity-100 visible"
                   : "scale-95 opacity-0 invisible"
-              }`}
+                }`}
             >
               {/* User Info */}
               <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-700 dark:text-slate-200">
@@ -268,9 +271,8 @@ export function Header({ logo, storeName }: HeaderProps) {
 
       {/* Mobile Menu */}
       <div
-        className={`overflow-hidden border-t border-slate-200 bg-white transition-all duration-300 md:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 ${
-          mobileMenu ? "max-h-96" : "max-h-0"
-        }`}
+        className={`overflow-hidden border-t border-slate-200 bg-white transition-all duration-300 md:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 ${mobileMenu ? "max-h-96" : "max-h-0"
+          }`}
       >
         <div className="px-4 py-4">
           {/* Mobile Nav Links */}
@@ -280,11 +282,10 @@ export function Header({ logo, storeName }: HeaderProps) {
                 key={link.href}
                 href={link.href}
                 onClick={() => setSearch(false)}
-                className={`rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                  isActive(link.href)
+                className={`rounded-xl px-4 py-3 text-sm font-medium transition-all ${isActive(link.href)
                     ? "bg-blue-50 text-blue-600"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
