@@ -10,7 +10,12 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: logoutapi,
     onSuccess: () => {
+      document.cookie = "auth_token=; Max-Age=0";
       document.cookie = "auth_token=; Path=/; Max-Age=0";
+      document.cookie.split(";").forEach((cookie) => {
+        const name = cookie.split("=")[0].trim();
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      });
       useAuthStore.getState().setUser(null);
       useWishlistStore.getState().clearWishlist();
       localStorage.removeItem("loggedIn");
