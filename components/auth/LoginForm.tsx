@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useLogin } from "@/hooks/auth/uselogin";
 import { useAuthStore } from "@/store/auth.store";
 import type { User } from "@/types/user";
+import Modal from "../common/Modal";
 
 const loginSchema = z.object({
   email: z
@@ -78,7 +79,16 @@ export default function LoginForm() {
       },
     });
   };
+  const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const seen = localStorage.getItem("demo-admin-modal");
+
+    if (!seen) {
+      setIsOpen(true);
+      localStorage.setItem("demo-admin-modal", "true");
+    }
+  }, []);
   return (
     <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-8 shadow-2xl border border-slate-200 dark:border-slate-600">
       <div className="mb-8 text-center">
@@ -102,11 +112,10 @@ export default function LoginForm() {
             placeholder="john@example.com"
             {...register("email")}
             className={`w-full rounded-xl border bg-white dark:bg-slate-950 px-4 py-3 outline-none transition-all
-            ${
-              errors.email
+            ${errors.email
                 ? "border-red-500 focus:border-red-500"
                 : "border-slate-300 dark:border-slate-700 focus:border-blue-500"
-            }`}
+              }`}
           />
 
           {errors.email && (
@@ -123,11 +132,10 @@ export default function LoginForm() {
               placeholder="Enter password"
               {...register("password")}
               className={`w-full rounded-xl border bg-white dark:bg-slate-950 px-4 py-3 pr-12 outline-none transition-all
-              ${
-                errors.password
+              ${errors.password
                   ? "border-red-500 focus:border-red-500"
                   : "border-slate-300 dark:border-slate-700 focus:border-blue-500"
-              }`}
+                }`}
             />
 
             <button
@@ -175,6 +183,50 @@ export default function LoginForm() {
           Create Account
         </Link>
       </p>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onConfirm={() => setIsOpen(false)}
+        title="Welcome 👋"
+        description="Use the demo administrator account below to access the admin dashboard."
+        confirmText="Continue"
+        cancelText="Close"
+        variant="primary"
+      >
+        <div className="space-y-4">
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900 dark:bg-indigo-950/40">
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
+              Demo Admin Credentials
+            </p>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+                  Email
+                </p>
+                <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                  admin@example.com
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+                  Password
+                </p>
+                <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                  Admin@123
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950/40">
+            <p className="text-xs text-amber-800 dark:text-amber-200">
+              These credentials are provided for demonstration purposes only.
+            </p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
