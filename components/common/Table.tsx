@@ -7,12 +7,17 @@ import {
   ThHTMLAttributes,
 } from "react";
 
+
+type TableProps = TableHTMLAttributes<HTMLTableElement> & {
+  containerClassName?: string;
+};
+
+
 export function Table({
   className = "",
   containerClassName = "",
   ...props
-}: TableHTMLAttributes<HTMLTableElement>) {
-  console.log(containerClassName);
+}: TableProps) {
   return (
     /* Outer layout card handling background theme accents and constraints independently */
     <div className="w-full rounded-2xl border border-blue-100/70 bg-blue-50/30 shadow-sm dark:border-slate-800 dark:bg-slate-950 overflow-hidden flex flex-col">
