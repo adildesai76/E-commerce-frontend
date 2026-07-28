@@ -14,7 +14,7 @@ export const useLogout = () => {
       useWishlistStore.getState().clearWishlist();
       localStorage.removeItem("loggedIn");
       document.cookie =
-        "token=; Max-Age=0; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        "auth_token=; Max-Age=0; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       router.replace("/login");
       // useAuthStore.getState().logout();
     },
