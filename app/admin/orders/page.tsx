@@ -10,6 +10,7 @@ import UpdateOrderStatus from "@/components/admin/orders/UpdateOrderStatus";
 import OrderSkeleton from "@/components/orders/OrderSkeleton";
 import { Shield, AlertTriangle, RefreshCcw, Inbox } from "lucide-react";
 import { Order } from "@/types/order";
+import OrderTableSkeleton from "@/components/admin/orders/OrderTableSkeleton";
 
 export default function AdminOrdersListingPage() {
   const [filters, setFilters] = useState<AdminOrderFilters>({
@@ -84,7 +85,7 @@ export default function AdminOrdersListingPage() {
       )}
 
       {/* Loading Block */}
-      {isLoading && <OrderSkeleton />}
+      {isLoading && <OrderTableSkeleton />}
 
       {/* Empty State */}
       {!isLoading && !isError && ordersList.length === 0 && (
@@ -105,7 +106,7 @@ export default function AdminOrdersListingPage() {
       {/* Core Table View Layer */}
       {!isLoading && !isError && ordersList.length > 0 && (
         /* flex-1 lets this content area scale fluidly to push the pagination footer neatly down */
-        <div className="flex-1 flex flex-col justify-between h-full space-y-3">
+        <div className="flex-1 flex flex-col justify-between h-full">
           <OrdersTable
             orders={ordersList}
             onOpenUpdateStatusModal={(order) =>

@@ -53,10 +53,20 @@ export default function ProductCard({
     categories.find((cat) => cat.value === product.category)?.label ||
     product.category;
 
-  const displayPrice = product.discountPrice || product.price;
-  const discountPct = product.discountPrice
+  // ── PRICE & DISCOUNT CALCULATION ─────────────────────────────────────────
+  // A valid discount exists ONLY if discountPrice is a number > 0 AND strictly less than price
+  const hasValidDiscount =
+    typeof product.discountPrice === "number" &&
+    product.discountPrice > 0 &&
+    product.discountPrice < product.price;
+
+  const displayPrice = hasValidDiscount
+    ? product.discountPrice!
+    : product.price;
+
+  const discountPct = hasValidDiscount
     ? Math.round(
-        ((product.price - product.discountPrice) / product.price) * 100,
+        ((product.price - product.discountPrice!) / product.price) * 100,
       )
     : 0;
 
@@ -91,6 +101,7 @@ export default function ProductCard({
   };
 
   const salebadge: boolean = discountPct > 0 && mode !== "admin";
+
   // ── LIST VIEW ────────────────────────────────────────────────────────────────
   if (view === "list") {
     return (
@@ -170,7 +181,7 @@ export default function ProductCard({
               <span className="text-xl font-bold text-slate-900 dark:text-white">
                 ₹{displayPrice.toLocaleString("en-IN")}
               </span>
-              {product.discountPrice && (
+              {hasValidDiscount && (
                 <span className="text-sm text-slate-400 line-through">
                   ₹{product.price.toLocaleString("en-IN")}
                 </span>
@@ -209,7 +220,7 @@ export default function ProductCard({
                 </Link>
                 <button
                   className="flex items-center justify-center rounded-xl border border-red-200 p-2 text-red-500 transition hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950"
-                  onClick={() => deleteProduct.mutate(product._id)}
+                  onClick={() => setIsDeleteModalOpen(true)}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -251,138 +262,128 @@ export default function ProductCard({
   // ── GRID VIEW ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`group overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-slate-900 ${
+      className={`group flex h-full flex-col justify-between overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-slate-900 ${
         isDraft
           ? "border-amber-200 dark:border-amber-900/40"
           : "border-slate-200 dark:border-slate-800"
       }`}
     >
-      {/* ── Image Zone ──────────────────────────────── */}
-      <div className="relative aspect-square overflow-hidden bg-slate-50 dark:bg-slate-800">
-        {/* Sale / Draft badge — top left */}
-        {isDraft ? (
-          <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow">
-            <FileText size={10} /> Draft
-          </span>
-        ) : salebadge ? (
-          <span className="absolute left-3 top-3 z-10 rounded-xl bg-red-500 px-3 py-1 text-[11px] font-bold tracking-wide text-white uppercase shadow">
-            SALE
-          </span>
-        ) : null}
+      <div>
+        {/* ── Image Zone ──────────────────────────────── */}
+        <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-slate-50 dark:bg-slate-800">
+          {/* Sale / Draft badge — top left */}
+          {isDraft ? (
+            <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-1 text-[10px] font-bold tracking-wide text-white uppercase shadow">
+              <FileText size={10} /> Draft
+            </span>
+          ) : salebadge ? (
+            <span className="absolute left-3 top-3 z-10 rounded-xl bg-red-500 px-3 py-1 text-[11px] font-bold tracking-wide text-white uppercase shadow">
+              SALE
+            </span>
+          ) : null}
 
-        {/* Wishlist — top right */}
-        {mode !== "admin" && !isDraft && (
-          <div className="absolute right-0 top-1 z-10">
-            <WishlistButton productId={product._id} wishlisted={wishlisted} />
-          </div>
-        )}
-
-        {/* Product Image */}
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={product.name}
-            fill
-            sizes="192px"
-            className="object-contain p-5 transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <span className="px-1 text-center text-[8px] font-medium leading-none text-gray-700 dark:text-gray-200">
-            {product.name}
-          </span>
-        )}
-
-        {/* Bottom gradient + Quick Add overlay (customer, in-stock, not draft) */}
-        {mode !== "admin" && product.stock > 0 && !isDraft && (
-          <div className="absolute inset-x-0 bottom-0">
-            {/* Gradient fade */}
-            <div className="h-20 bg-linear-to-t from-black/60 to-transparent" />
-            {/* Button slides up on hover */}
-            <div className="absolute inset-x-0 bottom-0 translate-y-full pb-3 px-3 transition-transform duration-300 group-hover:translate-y-0">
-              <button
-                onClick={handleToggle}
-                disabled={isAdding}
-                className={`flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold shadow-md transition-colors duration-200 active:scale-95 ${
-                  isInCart
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "bg-white text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                {isInCart ? (
-                  <>
-                    <Check size={14} /> In Cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart size={14} /> Quick Add to Bag
-                  </>
-                )}
-              </button>
+          {/* Wishlist — top right */}
+          {mode !== "admin" && !isDraft && (
+            <div className="absolute right-0 top-1 z-10">
+              <WishlistButton productId={product._id} wishlisted={wishlisted} />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Admin overlay — always visible action row */}
-        {mode === "admin" && (
-          <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
-            <div className="flex items-center justify-center gap-2 bg-black/70 px-3 py-3 backdrop-blur-sm">
-              <Link
-                href={`/admin/products/${product._id}`}
-                className="flex items-center justify-center rounded-full bg-white/20 p-2 text-white transition hover:bg-white/40"
-              >
-                <Eye size={15} />
-              </Link>
-              <Link
-                href={`/admin/products/edit/${product._id}`}
-                className="flex items-center justify-center rounded-full bg-white/20 p-2 text-white transition hover:bg-white/40"
-              >
-                <Pencil size={15} />
-              </Link>
-              <button
-                className="flex items-center justify-center rounded-full bg-red-500/80 p-2 text-white transition hover:bg-red-600"
-                onClick={() => {
-                  setIsDeleteModalOpen(true);
-                }}
-              >
-                <Trash2 size={15} />
-              </button>
+          {/* Product Image */}
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-contain p-5 transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <span className="px-1 text-center text-[8px] font-medium leading-none text-gray-700 dark:text-gray-200">
+              {product.name}
+            </span>
+          )}
+
+          {/* Bottom gradient + Quick Add overlay (customer, in-stock, not draft) */}
+          {mode !== "admin" && product.stock > 0 && !isDraft && (
+            <div className="absolute inset-x-0 bottom-0">
+              {/* Gradient fade */}
+              <div className="h-20 bg-linear-to-t from-black/60 to-transparent" />
+              {/* Button slides up on hover */}
+              <div className="absolute inset-x-0 bottom-0 translate-y-full pb-3 px-3 transition-transform duration-300 group-hover:translate-y-0">
+                <button
+                  onClick={handleToggle}
+                  disabled={isAdding}
+                  className={`flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold shadow-md transition-colors duration-200 active:scale-95 ${
+                    isInCart
+                      ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                      : "bg-white text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  {isInCart ? (
+                    <>
+                      <Check size={14} /> In Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={14} /> Quick Add to Bag
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* ── Info Zone ───────────────────────────────── */}
-      <div className="p-4 space-y-2">
-        {/* Stars — customer only */}
-        {/* {mode !== "admin" && (
-          <div className="flex items-center gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                size={13}
-                className="fill-amber-400 text-amber-400"
-              />
-            ))}
-          </div>
-        )} */}
-
-        {/* Category + Name */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 line-clamp-1">
-            {categoryLabel}
-          </p>
-          <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-slate-900 dark:text-white">
-            {product.name}
-          </h3>
+          {/* Admin overlay — always visible action row */}
+          {mode === "admin" && (
+            <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
+              <div className="flex items-center justify-center gap-2 bg-black/70 px-3 py-3 backdrop-blur-sm">
+                <Link
+                  href={`/admin/products/${product._id}`}
+                  className="flex items-center justify-center rounded-full bg-white/20 p-2 text-white transition hover:bg-white/40"
+                >
+                  <Eye size={15} />
+                </Link>
+                <Link
+                  href={`/admin/products/edit/${product._id}`}
+                  className="flex items-center justify-center rounded-full bg-white/20 p-2 text-white transition hover:bg-white/40"
+                >
+                  <Pencil size={15} />
+                </Link>
+                <button
+                  className="flex items-center justify-center rounded-full bg-red-500/80 p-2 text-white transition hover:bg-red-600"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* ── Info Zone ───────────────────────────────── */}
+        <div className="p-4 space-y-2">
+          {/* Category + Name */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 line-clamp-1">
+              {categoryLabel}
+            </p>
+            <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-slate-900 dark:text-white">
+              {product.name}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Footer Zone (Price & Mobile Actions) ─────── */}
+      <div className="p-4 pt-0 space-y-2 mt-auto">
         {/* Price row */}
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-1.5">
             <span className="text-base font-bold text-slate-900 dark:text-white">
               ₹{displayPrice.toLocaleString("en-IN")}
             </span>
-            {product.discountPrice && (
+            {hasValidDiscount && (
               <span className="text-xs text-slate-400 line-through">
                 ₹{product.price.toLocaleString("en-IN")}
               </span>
@@ -405,7 +406,7 @@ export default function ProductCard({
           </span>
         </div>
 
-        {/* Customer: fallback Add to Cart button (mobile — hover overlay not available) */}
+        {/* Customer: fallback Add to Cart button (mobile) */}
         {mode !== "admin" && (
           <button
             onClick={handleToggle}
@@ -434,15 +435,16 @@ export default function ProductCard({
             )}
           </button>
         )}
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={handleDelete}
-          title="Delete Product?"
-          description="Are you sure you want to delete this Product? This action cannot be undone."
-          confirmText="Delete"
-        />
       </div>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Product?"
+        description="Are you sure you want to delete this Product? This action cannot be undone."
+        confirmText="Delete"
+      />
     </div>
   );
 }

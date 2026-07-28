@@ -25,8 +25,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider>
-          <Suspense fallback={<Loader />}>
-            <QueryProvider>
+          <QueryProvider>
+            <Suspense
+              fallback={
+                <div>
+                  <Loader />
+                </div>
+              }
+            >
               <MarketingProvider>
                 <AuthProvider>
                   <SocketProvider>
@@ -35,8 +41,8 @@ export default function RootLayout({
                   </SocketProvider>
                 </AuthProvider>
               </MarketingProvider>
-            </QueryProvider>
-          </Suspense>
+            </Suspense>
+          </QueryProvider>
         </ThemeProvider>
       </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!} />
