@@ -1,8 +1,8 @@
 import AuthShowcase from "@/components/auth/AuthShowcase";
 import LoginForm from "@/components/auth/LoginForm";
 import ThemeToggle from "@/components/common/ThemeToggle";
-export default function LoginPage() {
 
+export default function LoginPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-slate-50 dark:bg-slate-950">
       <AuthShowcase />
@@ -14,7 +14,6 @@ export default function LoginPage() {
         </div>
 
         <LoginForm />
-
       </div>
     </div>
   );

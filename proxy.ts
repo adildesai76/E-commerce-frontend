@@ -44,7 +44,7 @@ function redirectToLogin(request: NextRequest) {
       }),
       {
         path: "/",
-        maxAge: 60 * 60 * 2, 
+        maxAge: 60 * 60 * 24 * 30, // 30 days
       },
     );
   }

@@ -29,6 +29,7 @@ export default function CustomerTable({
 }: CustomerTableProps) {
   return (
     <Table
+      className="min-w-full"
       containerClassName="max-h-[calc(100vh-23.7rem)]"
     >
       <TableHeader>
