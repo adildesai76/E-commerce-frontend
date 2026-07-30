@@ -79,7 +79,6 @@ export default function LoginForm() {
       },
     });
   };
-
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -90,7 +89,6 @@ export default function LoginForm() {
       localStorage.setItem("demo-admin-modal", "true");
     }
   }, []);
-
   return (
     <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-8 shadow-2xl border border-slate-200 dark:border-slate-600">
       <div className="mb-8 text-center">
@@ -207,7 +205,7 @@ export default function LoginForm() {
                   Email
                 </p>
                 <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                  admin@gmail.com
+                  admin@example.com
                 </div>
               </div>
 
@@ -216,7 +214,7 @@ export default function LoginForm() {
                   Password
                 </p>
                 <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                  Abcd@123
+                  Admin@123
                 </div>
               </div>
             </div>
