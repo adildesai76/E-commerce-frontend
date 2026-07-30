@@ -205,7 +205,7 @@ export default function LoginForm() {
                   Email
                 </p>
                 <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                  admin@example.com
+                  admin@gmail.com
                 </div>
               </div>
 
@@ -214,7 +214,7 @@ export default function LoginForm() {
                   Password
                 </p>
                 <div className="rounded-lg border bg-white px-3 py-2 font-mono text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                  Admin@123
+                  Abcd@123
                 </div>
               </div>
             </div>
